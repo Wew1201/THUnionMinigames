@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "thunion_survival_games",
+  "version": "${version}",
+  "name": "thunion_survival_games",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/Void/thunion_survival_games"
+  },
+  "license": "MIT",
+  "icon": "assets/thunion_survival_games/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "club.thunion.minigames.THUnionSurvivalGames"
+    ]
+  },
+  "mixins": [
+    "thunion_survival_games.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
