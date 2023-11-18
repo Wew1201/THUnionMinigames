@@ -4,6 +4,7 @@ import club.thunion.minigames.framework.MinigameTask;
 import club.thunion.minigames.sg.SurvivalGameLogic;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.inventory.Inventory;
@@ -12,6 +13,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.WorldChunk;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -56,18 +59,23 @@ public class RepopulateLootTask extends MinigameTask<SurvivalGameLogic> {
     }
 
     public void detectLootChests() {
-        BlockPos.Mutable mutablePos = new BlockPos.Mutable();
-        for (int x = repopulateArea.getMinX(); x <= repopulateArea.getMaxX(); x ++) {
-            for (int y = repopulateArea.getMinY(); y <= repopulateArea.getMaxY(); y ++) {
-                for (int z = repopulateArea.getMinZ(); x <= repopulateArea.getMaxZ(); z ++) {
-                    mutablePos.set(x, y, z);
-                    if (world.getBlockState(mutablePos).getBlock() instanceof ShulkerBoxBlock) {
-                        DyeColor boxColor = ShulkerBoxBlock.getColor(world.getBlockState(mutablePos).getBlock());
+        int minChunkX = repopulateArea.getMinX() >> 4;
+        int maxChunkX = repopulateArea.getMaxX() >> 4;
+        int minChunkZ = repopulateArea.getMinZ() >> 4;
+        int maxChunkZ = repopulateArea.getMaxZ() >> 4;
+        for (int cx = minChunkX; cx <= maxChunkX; cx ++) {
+            for (int cz = minChunkZ; cz <= maxChunkZ; cz ++) {
+                WorldChunk chunk = world.getChunk(cx, cz);
+                Map<BlockPos, BlockEntity> blockEntityMap = chunk.getBlockEntities();
+                for (BlockPos pos: blockEntityMap.keySet()) {
+                    if (!repopulateArea.contains(pos)) continue;
+                    if (world.getBlockState(pos).getBlock() instanceof ShulkerBoxBlock) {
+                        DyeColor boxColor = ShulkerBoxBlock.getColor(world.getBlockState(pos).getBlock());
                         if (boxColor == RANDOM_CHEST_COLOR) {
-                            randomizedLootChestPositions.add(mutablePos.toImmutable());
+                            randomizedLootChestPositions.add(pos);
                         } else {
-                            for (int i = 0; i < COLOR_BY_LOOT_TIER.length; i ++) {
-                                if (boxColor == COLOR_BY_LOOT_TIER[i]) fixedTierLootChestPositions[i].add(mutablePos.toImmutable());
+                            for (int i = 0; i < COLOR_BY_LOOT_TIER.length; i++) {
+                                if (boxColor == COLOR_BY_LOOT_TIER[i]) fixedTierLootChestPositions[i].add(pos);
                             }
                         }
                     }
