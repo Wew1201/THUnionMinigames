@@ -89,7 +89,7 @@ public class SurvivalGameLogic extends MinigameLogic {
         int terminationTicks = reader.readInt("loot.terminationTicks");
         int randomizedChestAmount = reader.readInt("loot.count.unspecified");
         int[] fixedTierLootChestAmount = new int[RepopulateLootTask.COLOR_BY_LOOT_TIER.length];
-        for (int i = 0; i <= RepopulateLootTask.COLOR_BY_LOOT_TIER.length; i ++) {
+        for (int i = 0; i < RepopulateLootTask.COLOR_BY_LOOT_TIER.length; i ++) {
             fixedTierLootChestAmount[i] = reader.readInt("loot.count.tier" + (i + 1));
         }
         registerTask(RESET_LOOT_TASK_ID, new RepopulateLootTask(
