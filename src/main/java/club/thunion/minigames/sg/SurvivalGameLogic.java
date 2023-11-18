@@ -6,7 +6,6 @@ import club.thunion.minigames.sg.tasks.RegisterParticipantsTask;
 import club.thunion.minigames.sg.tasks.RepopulateLootTask;
 import club.thunion.minigames.sg.tasks.ShrinkBorderTask;
 import club.thunion.minigames.util.PropertyReader;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
@@ -79,9 +78,14 @@ public class SurvivalGameLogic extends MinigameLogic {
         BlockBox repopBox = reader.readBlockBox("loot.populationBox");
         int repopInterval = reader.readInt("loot.interval");
         int terminationTicks = reader.readInt("loot.terminationTicks");
+        int randomizedChestAmount = reader.readInt("loot.count.unspecified");
+        int[] fixedTierLootChestAmount = new int[RepopulateLootTask.COLOR_BY_LOOT_TIER.length];
+        for (int i = 0; i <= RepopulateLootTask.COLOR_BY_LOOT_TIER.length; i ++) {
+            fixedTierLootChestAmount[i] = reader.readInt("loot.count.tier" + (i + 1));
+        }
         registerTask(RESET_LOOT_TASK_ID, new RepopulateLootTask(
-                terminationTicks, repopInterval, repopBox, SERVER.getWorld(World.OVERWORLD)
-        ));
+                terminationTicks, repopInterval, repopBox, SERVER.getWorld(World.OVERWORLD),
+                randomizedChestAmount, fixedTierLootChestAmount));
     }
 
     private List<ServerPlayerEntity> participants = new ArrayList<>();

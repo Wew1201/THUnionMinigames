@@ -6,6 +6,8 @@
   "mixins": [
     "BlockDisplayEntity_accessor",
     "DisplayEntity_accessor",
+    "Explosion_weakFireball",
+    "FireballEntity_selfDestruct",
     "PersistentProjectileEntity_accessor",
     "SnowballEntity_iceBomb",
     "TridentEntity_thunder"

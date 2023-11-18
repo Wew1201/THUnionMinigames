@@ -1,7 +1,9 @@
 package club.thunion.minigames;
 
 import club.thunion.minigames.framework.MinigameRegistry;
+import club.thunion.minigames.framework.item.CustomItemBehavior;
 import club.thunion.minigames.framework.item.CustomItemRegistry;
+import club.thunion.minigames.sg.item.*;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.api.ModInitializer;
@@ -21,6 +23,12 @@ import static net.minecraft.server.command.CommandManager.argument;
 public class THUnionSurvivalGames implements ModInitializer {
     public static MinecraftServer SERVER;
 
+    public void registerCustomItem(CustomItemBehavior... behaviors) {
+        for (CustomItemBehavior behavior: behaviors) {
+            CustomItemRegistry.registerCustomItem(this, behavior);
+        }
+    }
+
     public void registerMinigameCommand() {
         CommandRegistrationCallback.EVENT.register(new CommandRegistrationCallback() {
             @Override
@@ -36,6 +44,18 @@ public class THUnionSurvivalGames implements ModInitializer {
                     MinigameRegistry.instantiateMinigameFromConfig(configName);
                     return 1;
                 }))));
+            }
+        });
+        CommandRegistrationCallback.EVENT.register(new CommandRegistrationCallback() {
+            @Override
+            public void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
+                dispatcher.register(literal("customItems").then(literal("on").executes(__ -> {
+                    registerCustomItem(new DeathScythe(), new Fireball(), new IceBomb(), new SignalScreener(), new ThunderTrident(), new WitherBomb());
+                    return 1;
+                })).then(literal("off")).executes(__ -> {
+                    CustomItemRegistry.removeCustomItemsInGroup(THUnionSurvivalGames.this);
+                    return 1;
+                }));
             }
         });
     }

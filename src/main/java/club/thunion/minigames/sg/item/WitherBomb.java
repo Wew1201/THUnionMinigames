@@ -11,6 +11,8 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class WitherBomb extends CustomItemBehavior {
@@ -24,8 +26,18 @@ public class WitherBomb extends CustomItemBehavior {
         if (!isCustom(itemStack)) return null;
         world.playSound((PlayerEntity)null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
         if (!world.isClient) {
-            WitherSkullEntity skullEntity = new WitherSkullEntity(world, user, 1, 0, 0);
-            skullEntity.setVelocity(user, user.getPitch(), user.getYaw(), 0.0F, 1F, 0F);
+            float pitch = user.getPitch();
+            float yaw = user.getYaw();
+            float roll = 0.0f;
+            float f = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
+            float g = -MathHelper.sin((pitch + roll) * 0.017453292F);
+            float h = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
+            Vec3d userVelocity = user.getVelocity();
+            Vec3d velocity = new Vec3d(f, g, h).add(userVelocity.x, user.isOnGround() ? 0.0 : userVelocity.y, userVelocity.z);
+            Vec3d velocityNormalized = velocity.normalize();
+            WitherSkullEntity skullEntity = new WitherSkullEntity(world, user, velocityNormalized.x, velocityNormalized.y, velocityNormalized.z);
+            skullEntity.setVelocity(velocity);
+            skullEntity.refreshPositionAfterTeleport(skullEntity.getPos().add(velocityNormalized.multiply(0.6)));
             world.spawnEntity(skullEntity);
         }
         if (!user.getAbilities().creativeMode) {

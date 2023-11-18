@@ -14,7 +14,7 @@ public class RegisterCustomItemsTask extends MinigameTask<SurvivalGameLogic> {
         this.deregisterTick = deregisterTick;
     }
 
-    private void register(CustomItemBehavior... behaviors) {
+    public void register(CustomItemBehavior... behaviors) {
         for (CustomItemBehavior behavior: behaviors) {
             CustomItemRegistry.registerCustomItem(this, behavior);
         }
