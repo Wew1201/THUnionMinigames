@@ -6,6 +6,7 @@ import club.thunion.minigames.framework.item.CustomItemRegistry;
 import club.thunion.minigames.sg.item.*;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.logging.LogUtils;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -16,11 +17,14 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.TypedActionResult;
+import org.slf4j.Logger;
 
 import static net.minecraft.server.command.CommandManager.literal;
 import static net.minecraft.server.command.CommandManager.argument;
 
 public class THUnionSurvivalGames implements ModInitializer {
+
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static MinecraftServer SERVER;
 
     public void registerCustomItem(CustomItemBehavior... behaviors) {
@@ -41,7 +45,9 @@ public class THUnionSurvivalGames implements ModInitializer {
                     return 1;
                 })).then(literal("instantiate").then(argument("configName", StringArgumentType.string()).executes(cmd -> {
                     String configName = cmd.getArgument("configName", String.class);
+                    LOGGER.info("Start loading mini game: " + configName);
                     MinigameRegistry.instantiateMinigameFromConfig(configName);
+                    LOGGER.info("Mini game loaded");
                     return 1;
                 }))));
             }
