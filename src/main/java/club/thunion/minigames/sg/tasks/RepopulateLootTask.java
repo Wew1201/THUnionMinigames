@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class RepopulateLootTask extends MinigameTask<SurvivalGameLogic> {
     private final int repopulateInterval;
@@ -43,13 +44,14 @@ public class RepopulateLootTask extends MinigameTask<SurvivalGameLogic> {
         for (int i = 0; i < COLOR_BY_LOOT_TIER.length; i ++) fixedTierLootChestPositions[i] = new HashSet<>();
     }
 
-    public static <E> void trimSetToSize(Set<E> setToTrim, int size) {
+    public static <E> void trimSetToSize(Set<E> setToTrim, int size, Consumer<E> trimmedElementCallback) {
         if (setToTrim.size() <= size) return;
         List<E> list = new ArrayList<>(setToTrim);
         Collections.shuffle(list);
         for (E element: list) {
             if (setToTrim.size() <= size) return;
             setToTrim.remove(element);
+            trimmedElementCallback.accept(element);
         }
     }
 
@@ -72,9 +74,15 @@ public class RepopulateLootTask extends MinigameTask<SurvivalGameLogic> {
                 }
             }
         }
-        trimSetToSize(randomizedLootChestPositions, randomizedChestAmount);
+        trimSetToSize(randomizedLootChestPositions, randomizedChestAmount, pos -> {
+            if (world.getBlockEntity(pos) instanceof Inventory inventory) inventory.clear();
+            world.removeBlock(pos, false);
+        });
         for (int i = 0; i < COLOR_BY_LOOT_TIER.length; i ++) {
-            trimSetToSize(fixedTierLootChestPositions[i], fixedTierLootChestAmount[i]);
+            trimSetToSize(fixedTierLootChestPositions[i], fixedTierLootChestAmount[i], pos -> {
+                if (world.getBlockEntity(pos) instanceof Inventory inventory) inventory.clear();
+                world.removeBlock(pos, false);
+            });
         }
     }
 
