@@ -25,7 +25,7 @@ public class DeathScythe extends CustomItemBehavior {
 
     public static void attractVictims(PlayerEntity user) {
         List<PlayerEntity> victims = user.getWorld().getEntitiesByClass(PlayerEntity.class
-                , user.getBoundingBox().expand(5), __ -> __ != user);
+                , user.getBoundingBox().expand(7), __ -> __ != user);
         for (PlayerEntity victim: victims) {
             Vec3d targetPos = victim.getPos().add(user.getPos().multiply(2)).multiply(1.0 / 3);
             BlockPos targetPosI = new BlockPos(
