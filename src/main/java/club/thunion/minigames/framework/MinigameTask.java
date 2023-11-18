@@ -4,7 +4,7 @@ import java.util.Properties;
 
 public abstract class MinigameTask<L extends MinigameLogic> {
     private final int priority;
-    private boolean active = false;
+    private boolean active = true;
     private boolean removed = false;
     private final Class<L> compatibleLogicClass;
 
