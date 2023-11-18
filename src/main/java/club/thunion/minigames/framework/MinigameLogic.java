@@ -43,10 +43,6 @@ public class MinigameLogic {
     }
 
     public void tick() {
-        for (MinigameTask<?> task: taskSet) {
-            if (task.isRemoved()) continue;
-            task.tryExecute(this, tickCounter);
-        }
         MinigameTask<?> task;
         for (Iterator<MinigameTask<?>> it = taskRegistry.values().iterator(); it.hasNext();) {
             task = it.next();

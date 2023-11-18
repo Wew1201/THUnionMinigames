@@ -5,6 +5,7 @@ import club.thunion.minigames.framework.MinigameTask;
 import club.thunion.minigames.mixins.BlockDisplayEntity_accessor;
 import club.thunion.minigames.mixins.DisplayEntity_accessor;
 import club.thunion.minigames.sg.SurvivalGameLogic;
+import com.mojang.logging.LogUtils;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -16,12 +17,14 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Vector3f;
+import org.slf4j.Logger;
 
 import java.util.EnumMap;
 import java.util.List;
 
 public class ShrinkBorderTask extends MinigameTask<SurvivalGameLogic> {
-    private boolean initialized = false;
+    private static final Logger LOGGER = LogUtils.getLogger();
+
     private final EnumMap<Direction, DisplayEntity.BlockDisplayEntity> borderDisplays = new EnumMap<>(Direction.class);
     private final ServerWorld world;
     private final Box initialBox;
@@ -72,7 +75,7 @@ public class ShrinkBorderTask extends MinigameTask<SurvivalGameLogic> {
     }
 
     private void initializeDisplayEntities() {
-        double maxSide = Math.max(initialBox.getXLength(), Math.max(initialBox.getYLength(), initialBox.getZLength()));
+        LOGGER.info("Initializing border displays");
         for (Direction dir: Direction.values()) {
             DisplayEntity.BlockDisplayEntity display = new DisplayEntity.BlockDisplayEntity(EntityType.BLOCK_DISPLAY, world);
             adaptDisplayToWallOfBox(display, initialBox, dir);
@@ -83,7 +86,7 @@ public class ShrinkBorderTask extends MinigameTask<SurvivalGameLogic> {
 
     @Override
     public void execute(SurvivalGameLogic logic, int tickCounter) {
-        if (!this.initialized) {
+        if (tickCounter == 0) {
             this.initializeDisplayEntities();
         }
         this.killPlayersOutsideBorder(logic.getParticipants());

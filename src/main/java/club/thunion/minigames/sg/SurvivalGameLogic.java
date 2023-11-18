@@ -68,7 +68,7 @@ public class SurvivalGameLogic extends MinigameLogic {
             if (formatting == null) throw new IllegalArgumentException();
             Box teamBox = reader.readBox(keyI + ".box");
             teamBoxes.put(formatting, teamBox);
-            i++;
+            i ++;
         }
         RegisterParticipantsTask registerParticipantsTask = new RegisterParticipantsTask(
                 world, teamBoxes, spectatorBox, centerPos, spreadRadius
