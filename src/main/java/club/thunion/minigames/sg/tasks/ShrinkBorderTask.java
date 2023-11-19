@@ -2,12 +2,17 @@ package club.thunion.minigames.sg.tasks;
 
 import club.thunion.minigames.framework.MinigameTask;
 import club.thunion.minigames.sg.SurvivalGameLogic;
+import club.thunion.minigames.util.ChatHelper;
+import club.thunion.minigames.util.Milestone;
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.*;
 import net.minecraft.world.GameMode;
 import org.slf4j.Logger;
+
+import static club.thunion.minigames.THUnionSurvivalGames.SERVER;
 
 public class ShrinkBorderTask extends MinigameTask<SurvivalGameLogic> {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -20,6 +25,8 @@ public class ShrinkBorderTask extends MinigameTask<SurvivalGameLogic> {
     private final int shrinkingTicks;
     private final int terminationTicks;
 
+    private final Milestone milestone;
+
     public ShrinkBorderTask(ServerWorld world, Box initialBox, Box terminalBox, int shrinkingStartTick, int shrinkingTicks, int terminationTicks) {
         super(-20, SurvivalGameLogic.class);
         this.world = world;
@@ -28,6 +35,36 @@ public class ShrinkBorderTask extends MinigameTask<SurvivalGameLogic> {
         this.shrinkingStartTick = shrinkingStartTick;
         this.shrinkingTicks = shrinkingTicks;
         this.terminationTicks = terminationTicks;
+        this.milestone = new Milestone()
+                .addKeyPoint(shrinkingStartTick, () -> ChatHelper.broadcast(SERVER, Text.of("开始缩圈!")))
+                .addKeyPoint(shrinkingStartTick + shrinkingTicks, () -> ChatHelper.broadcast(SERVER, Text.of("缩圈结束")));
+
+        for (int time = 1200; time < shrinkingStartTick; time += 1200) {
+            int finalTime = time;
+            this.milestone.addKeyPoint(
+                    shrinkingStartTick - time,
+                    () -> ChatHelper.broadcast(SERVER, Text.of("缩圈开始倒计时： " + finalTime / 1200 + "分钟")));
+        }
+
+        for (int time = 1200; time < terminationTicks; time += 1200) {
+            int finalTime = time;
+            if (finalTime / 1200 > 5) {
+                break;
+            }
+            this.milestone.addKeyPoint(
+                    terminationTicks - time,
+                    () -> ChatHelper.broadcast(SERVER, Text.of("结束倒计时： " + finalTime / 1200 + "分钟")));
+        }
+
+        for (int time = 100; time < terminationTicks; time += 100) {
+            int finalTime = time;
+            if (finalTime / 100 > 12) {
+                break;
+            }
+            this.milestone.addKeyPoint(
+                    terminationTicks - time,
+                    () -> ChatHelper.broadcast(SERVER, Text.of("结束倒计时： " + finalTime / 20 + "秒")));
+        }
     }
 
     public void updateWorldBorder() {
@@ -50,6 +87,7 @@ public class ShrinkBorderTask extends MinigameTask<SurvivalGameLogic> {
 
     @Override
     public void execute(SurvivalGameLogic logic, int tickCounter) {
+        milestone.update(tickCounter);
         if (tickCounter > shrinkingStartTick) {
             double progress = (double) (tickCounter - shrinkingStartTick) / shrinkingTicks;
             if (progress <= 1) {
