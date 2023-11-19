@@ -36,6 +36,7 @@ public class WitherBomb extends CustomItemBehavior {
             Vec3d velocity = new Vec3d(f, g, h).add(userVelocity.x, user.isOnGround() ? 0.0 : userVelocity.y, userVelocity.z);
             Vec3d velocityNormalized = velocity.normalize();
             WitherSkullEntity skullEntity = new WitherSkullEntity(world, user, velocityNormalized.x, velocityNormalized.y, velocityNormalized.z);
+            skullEntity.setPosition(user.getEyePos());
             skullEntity.setVelocity(velocity);
             skullEntity.refreshPositionAfterTeleport(skullEntity.getPos().add(velocityNormalized.multiply(0.6)));
             world.spawnEntity(skullEntity);

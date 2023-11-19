@@ -27,6 +27,7 @@ public class Fireball extends CustomItemBehavior {
         if (!world.isClient) {
             FireballEntity fireballEntity = new FireballEntity(world, user, 0D, 0D, 0D, 2);
             fireballEntity.setItem(itemStack);
+            fireballEntity.setPosition(user.getEyePos());
             fireballEntity.setVelocity(user, user.getPitch(), user.getYaw(), 0.0F, 4.0F, 1.0F);
             fireballEntity.refreshPositionAfterTeleport(fireballEntity.getPos().add(fireballEntity.getVelocity().multiply(0.4)));
             world.spawnEntity(fireballEntity);
