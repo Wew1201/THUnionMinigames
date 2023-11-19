@@ -57,7 +57,7 @@ public class RegisterParticipantsTask extends MinigameTask<SurvivalGameLogic> {
         }
         double stepAngle = 2 * Math.PI / allPlayers.size();
         double angle = 0;
-        logic.getParticipants().addAll(allPlayers);
+        allPlayers.forEach(p -> logic.getParticipants().add(p.getEntityName()));
         for (ServerPlayerEntity player: allPlayers) {
             player.refreshPositionAfterTeleport(initialPlayerCenter.add(
                     playerSpreadRadius * Math.cos(angle), 0, playerSpreadRadius * Math.sin(angle)));
