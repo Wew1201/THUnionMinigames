@@ -73,6 +73,7 @@ public class RegisterParticipantsTask extends MinigameTask<SurvivalGameLogic> {
             Vec3d tpPos = initialPlayerCenter.add(
                     playerSpreadRadius * Math.cos(angle), 0, playerSpreadRadius * Math.sin(angle));
             player.teleport(tpPos.x, tpPos.y, tpPos.z);
+            player.changeGameMode(GameMode.ADVENTURE);
             LOGGER.info("TPed player {} to position {}", player.getEntityName(), tpPos);
             angle += stepAngle;
         }
