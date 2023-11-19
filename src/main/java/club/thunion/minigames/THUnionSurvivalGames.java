@@ -4,6 +4,7 @@ import club.thunion.minigames.framework.MinigameRegistry;
 import club.thunion.minigames.framework.item.CustomItemBehavior;
 import club.thunion.minigames.framework.item.CustomItemRegistry;
 import club.thunion.minigames.sg.item.*;
+import club.thunion.minigames.util.ChatHelper;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.logging.LogUtils;
@@ -40,18 +41,18 @@ public class THUnionSurvivalGames implements ModInitializer {
             public void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
                 dispatcher.register(literal("minigames").then(literal("start").executes(command -> {
                     MinigameRegistry.tickingMinigame = true;
-                    command.getSource().sendMessage(Text.of("小游戏开始"));
+                    ChatHelper.broadcast(SERVER, Text.of("小游戏开始"));
                     return 1;
                 })).then(literal("stop").executes(command -> {
                     MinigameRegistry.tickingMinigame = false;
-                    command.getSource().sendMessage(Text.of("小游戏停止"));
+                    ChatHelper.broadcast(SERVER, Text.of("小游戏停止"));
                     return 1;
                 })).then(literal("instantiate").then(argument("configName", StringArgumentType.string()).executes(command -> {
                     String configName = command.getArgument("configName", String.class);
                     LOGGER.info("Start loading mini game: " + configName);
                     MinigameRegistry.instantiateMinigameFromConfig(configName);
                     LOGGER.info("Mini game loaded");
-                    command.getSource().sendMessage(Text.of("小游戏加载完成"));
+                    ChatHelper.broadcast(SERVER, Text.of("小游戏加载完成"));
                     return 1;
                 }))));
             }
@@ -61,11 +62,11 @@ public class THUnionSurvivalGames implements ModInitializer {
             public void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
                 dispatcher.register(literal("customItems").then(literal("on").executes(command -> {
                     registerCustomItem(new DeathScythe(), new Fireball(), new IceBomb(), new SignalScreener(), new ThunderTrident(), new WitherBomb());
-                    command.getSource().sendMessage(Text.of("自定义物品开启"));
+                    ChatHelper.broadcast(SERVER, Text.of("自定义物品开启"));
                     return 1;
                 })).then(literal("off")).executes(command -> {
                     CustomItemRegistry.removeCustomItemsInGroup(THUnionSurvivalGames.this);
-                    command.getSource().sendMessage(Text.of("自定义物品关闭"));
+                    ChatHelper.broadcast(SERVER, Text.of("自定义物品关闭"));
                     return 1;
                 }));
             }
