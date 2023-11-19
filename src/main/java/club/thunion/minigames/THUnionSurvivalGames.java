@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
 import net.minecraft.util.TypedActionResult;
 import org.slf4j.Logger;
 
@@ -37,17 +38,20 @@ public class THUnionSurvivalGames implements ModInitializer {
         CommandRegistrationCallback.EVENT.register(new CommandRegistrationCallback() {
             @Override
             public void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
-                dispatcher.register(literal("minigames").then(literal("start").executes(__ -> {
+                dispatcher.register(literal("minigames").then(literal("start").executes(command -> {
                     MinigameRegistry.tickingMinigame = true;
+                    command.getSource().sendMessage(Text.of("小游戏开始"));
                     return 1;
-                })).then(literal("stop").executes(__ -> {
+                })).then(literal("stop").executes(command -> {
                     MinigameRegistry.tickingMinigame = false;
+                    command.getSource().sendMessage(Text.of("小游戏停止"));
                     return 1;
-                })).then(literal("instantiate").then(argument("configName", StringArgumentType.string()).executes(cmd -> {
-                    String configName = cmd.getArgument("configName", String.class);
+                })).then(literal("instantiate").then(argument("configName", StringArgumentType.string()).executes(command -> {
+                    String configName = command.getArgument("configName", String.class);
                     LOGGER.info("Start loading mini game: " + configName);
                     MinigameRegistry.instantiateMinigameFromConfig(configName);
                     LOGGER.info("Mini game loaded");
+                    command.getSource().sendMessage(Text.of("小游戏加载完成"));
                     return 1;
                 }))));
             }
@@ -55,11 +59,13 @@ public class THUnionSurvivalGames implements ModInitializer {
         CommandRegistrationCallback.EVENT.register(new CommandRegistrationCallback() {
             @Override
             public void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
-                dispatcher.register(literal("customItems").then(literal("on").executes(__ -> {
+                dispatcher.register(literal("customItems").then(literal("on").executes(command -> {
                     registerCustomItem(new DeathScythe(), new Fireball(), new IceBomb(), new SignalScreener(), new ThunderTrident(), new WitherBomb());
+                    command.getSource().sendMessage(Text.of("自定义物品开启"));
                     return 1;
-                })).then(literal("off")).executes(__ -> {
+                })).then(literal("off")).executes(command -> {
                     CustomItemRegistry.removeCustomItemsInGroup(THUnionSurvivalGames.this);
+                    command.getSource().sendMessage(Text.of("自定义物品关闭"));
                     return 1;
                 }));
             }
