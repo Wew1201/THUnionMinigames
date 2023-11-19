@@ -10,7 +10,8 @@
     "FireballEntity_selfDestruct",
     "PersistentProjectileEntity_accessor",
     "SnowballEntity_iceBomb",
-    "TridentEntity_thunder"
+    "TridentEntity_thunder",
+    "WitherSkullEntity_nerf"
   ],
   "client": [
   ],
