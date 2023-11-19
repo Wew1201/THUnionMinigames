@@ -19,7 +19,10 @@ public class MinigameRegistry {
     public static boolean tickingMinigame = false;
 
     public static void tryTickMinigame() {
-        if (runningMinigame != null && tickingMinigame) runningMinigame.tick();
+        if (runningMinigame != null && tickingMinigame) {
+            if (runningMinigame.running) runningMinigame.tick();
+            else runningMinigame = null;
+        }
     }
 
     public static void instantiateMinigameFromConfig(String configName) {

@@ -1,10 +1,7 @@
 package club.thunion.minigames.sg;
 
 import club.thunion.minigames.framework.MinigameLogic;
-import club.thunion.minigames.sg.tasks.RegisterCustomItemsTask;
-import club.thunion.minigames.sg.tasks.RegisterParticipantsTask;
-import club.thunion.minigames.sg.tasks.RepopulateLootTask;
-import club.thunion.minigames.sg.tasks.ShrinkBorderTask;
+import club.thunion.minigames.sg.tasks.*;
 import club.thunion.minigames.util.PropertyReader;
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.world.ServerWorld;
@@ -25,10 +22,11 @@ import static club.thunion.minigames.THUnionSurvivalGames.SERVER;
 public class SurvivalGameLogic extends MinigameLogic {
 
     private static final Logger LOGGER = LogUtils.getLogger();
-    public final String SHRINK_BORDER_TASK_ID = "ShrinkBorder";
-    public final String REGISTER_PLAYERS_TASK_ID = "RegisterPlayers";
-    public final String REGISTER_ITEMS_TASK_ID = "RegisterCustomItems";
-    public final String RESET_LOOT_TASK_ID = "ResetLoot";
+    public static final String SHRINK_BORDER_TASK_ID = "ShrinkBorder";
+    public static final String REGISTER_PLAYERS_TASK_ID = "RegisterPlayers";
+    public static final String REGISTER_ITEMS_TASK_ID = "RegisterCustomItems";
+    public static final String RESET_LOOT_TASK_ID = "ResetLoot";
+    public static final String TERMINATE_GAME_TASK_ID = "TerminateGame";
 
     public SurvivalGameLogic(Properties properties) {
         super(properties);
@@ -37,6 +35,7 @@ public class SurvivalGameLogic extends MinigameLogic {
         registerInitializationTask(reader);
         registerCustomItemTask(reader);
         registerRepopulateLootTask(reader);
+        registerTask(TERMINATE_GAME_TASK_ID, new TerminateGameTask());
     }
 
     private void registerShrinkBorderTask(PropertyReader reader) {

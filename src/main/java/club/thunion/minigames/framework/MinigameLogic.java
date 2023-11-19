@@ -6,6 +6,7 @@ public class MinigameLogic {
     private int tickCounter = 0;
     private final TreeSet<MinigameTask<?>> taskSet = new TreeSet<>(Comparator.comparingInt(MinigameTask::getPriority));
     private final Map<String, MinigameTask<?>> taskRegistry = new HashMap<>();
+    public boolean running = true;
 
     public MinigameLogic(Properties properties) {
     }

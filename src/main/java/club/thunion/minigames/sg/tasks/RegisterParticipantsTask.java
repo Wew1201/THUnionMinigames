@@ -56,6 +56,7 @@ public class RegisterParticipantsTask extends MinigameTask<SurvivalGameLogic> {
                 team = scoreboard.addTeam(teamColor.getName());
                 team.setColor(teamColor);
             }
+            team.setFriendlyFireAllowed(false);
             List<ServerPlayerEntity> players = world.getEntitiesByClass(ServerPlayerEntity.class, teamJoinBoxMap.get(teamColor), __ -> true);
             for (ServerPlayerEntity player: players) {
                 LOGGER.info("Assigned {} as member of team {}", player.getEntityName(), teamColor.getName());
