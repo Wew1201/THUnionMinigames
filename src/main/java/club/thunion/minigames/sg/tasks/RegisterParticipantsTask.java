@@ -2,6 +2,7 @@ package club.thunion.minigames.sg.tasks;
 
 import club.thunion.minigames.framework.MinigameTask;
 import club.thunion.minigames.sg.SurvivalGameLogic;
+import com.mojang.logging.LogUtils;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -10,12 +11,15 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class RegisterParticipantsTask extends MinigameTask<SurvivalGameLogic> {
+    private static final Logger LOGGER = LogUtils.getLogger();
+
     private final ServerWorld world;
     private final Map<Formatting, Box> teamJoinBoxMap;
     private final Box spectatorBox;
@@ -34,12 +38,14 @@ public class RegisterParticipantsTask extends MinigameTask<SurvivalGameLogic> {
     private void assignSpectators() {
         Scoreboard scoreboard = world.getServer().getScoreboard();
         for (ServerPlayerEntity player: world.getEntitiesByClass(ServerPlayerEntity.class, spectatorBox, __ -> true)) {
+            LOGGER.info("Assigned {} as spectator", player.getEntityName());
             scoreboard.clearPlayerTeam(player.getEntityName());
             player.changeGameMode(GameMode.SPECTATOR);
         }
     }
 
     private void assignTeamsAndSpreadPlayers(SurvivalGameLogic logic) {
+        world.getWorldBorder().setSize(100000);
         Scoreboard scoreboard = world.getServer().getScoreboard();
         List<ServerPlayerEntity> allPlayers = new ArrayList<>();
         for (Formatting teamColor: teamJoinBoxMap.keySet()) {
@@ -50,6 +56,7 @@ public class RegisterParticipantsTask extends MinigameTask<SurvivalGameLogic> {
             }
             List<ServerPlayerEntity> players = world.getEntitiesByClass(ServerPlayerEntity.class, teamJoinBoxMap.get(teamColor), __ -> true);
             for (ServerPlayerEntity player: players) {
+                LOGGER.info("Assigned {} as member of team {}", player.getEntityName(), teamColor.getName());
                 scoreboard.clearPlayerTeam(player.getEntityName());
                 scoreboard.addPlayerToTeam(player.getEntityName(), team);
                 allPlayers.add(player);
@@ -57,10 +64,13 @@ public class RegisterParticipantsTask extends MinigameTask<SurvivalGameLogic> {
         }
         double stepAngle = 2 * Math.PI / allPlayers.size();
         double angle = 0;
+        LOGGER.info("Spreading {} players", allPlayers.size());
         allPlayers.forEach(p -> logic.getParticipants().add(p.getEntityName()));
         for (ServerPlayerEntity player: allPlayers) {
-            player.refreshPositionAfterTeleport(initialPlayerCenter.add(
-                    playerSpreadRadius * Math.cos(angle), 0, playerSpreadRadius * Math.sin(angle)));
+            Vec3d tpPos = initialPlayerCenter.add(
+                    playerSpreadRadius * Math.cos(angle), 0, playerSpreadRadius * Math.sin(angle));
+            player.teleport(tpPos.x, tpPos.y, tpPos.z);
+            LOGGER.info("TPed player {} to position {}", player.getEntityName(), tpPos);
             angle += stepAngle;
         }
     }

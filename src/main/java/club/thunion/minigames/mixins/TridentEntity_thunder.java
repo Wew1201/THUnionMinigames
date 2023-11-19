@@ -22,13 +22,18 @@ public abstract class TridentEntity_thunder {
     public void thunder(TridentEntity self, Entity hitEntity) {
         if (hitEntity == null) {
             List<PlayerEntity> playersNearby = self.getWorld().getEntitiesByClass(PlayerEntity.class,
-                    self.getBoundingBox().expand(2), p -> p != self.getOwner());
+                    self.getBoundingBox().expand(4), p -> {
+                        if (p == self.getOwner()) return false;
+                        if (self.getOwner() == null) return false;
+                        return p.getWorld().getScoreboard().getTeam(p.getEntityName()) !=
+                                self.getOwner().getWorld().getScoreboard().getTeam(self.getOwner().getEntityName());
+                    });
             if (!playersNearby.isEmpty()) hitEntity = playersNearby.get(self.getWorld().random.nextInt(playersNearby.size()));
             else hitEntity = self;
         }
         Entity entity2 = self.getOwner();
         BlockPos blockPos = hitEntity.getBlockPos();
-        LightningEntity lightningEntity = (LightningEntity) EntityType.LIGHTNING_BOLT.create(self.getWorld());
+        LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(self.getWorld());
         if (lightningEntity != null) {
             lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
             lightningEntity.setChanneler(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity) entity2 : null);
