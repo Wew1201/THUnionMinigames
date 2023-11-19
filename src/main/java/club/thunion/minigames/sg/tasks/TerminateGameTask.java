@@ -23,7 +23,7 @@ public class TerminateGameTask extends MinigameTask<SurvivalGameLogic> {
 
     private void setAllPlayersToSpectators(SurvivalGameLogic logic) {
         List<String> participantNames = logic.getParticipants();
-        SERVER.getWorld(World.OVERWORLD).getPlayers(p -> participantNames.contains(p.getEntityName())).forEach(p -> {
+        SERVER.getOverworld().getPlayers(p -> participantNames.contains(p.getEntityName())).forEach(p -> {
             p.changeGameMode(GameMode.SPECTATOR);
             SERVER.getScoreboard().clearPlayerTeam(p.getEntityName());
         });
@@ -33,7 +33,7 @@ public class TerminateGameTask extends MinigameTask<SurvivalGameLogic> {
     public void execute(SurvivalGameLogic logic, int tickCounter) {
         if (logic.getTask(SurvivalGameLogic.SHRINK_BORDER_TASK_ID) == null) {
             logic.running = false;
-            SERVER.getWorld(World.OVERWORLD).getPlayers().forEach(player -> {
+            SERVER.getOverworld().getPlayers().forEach(player -> {
                 try {
                     player.networkHandler.sendPacket(
                             new TitleS2CPacket(Texts.parse(player.getCommandSource(), Text.of("游戏超时结束"), player, 0)));
@@ -42,10 +42,11 @@ public class TerminateGameTask extends MinigameTask<SurvivalGameLogic> {
         }
         List<String> participantNames = logic.getParticipants();
         if (participantNames.stream().map(SERVER.getScoreboard()::getPlayerTeam).filter(Objects::nonNull).collect(Collectors.toSet()).size() == 1) {
-            Team team = SERVER.getScoreboard().getTeam(participantNames.get(0));
+            Team team = SERVER.getScoreboard().getPlayerTeam(participantNames.get(0));
+            assert team != null;
             Text text = Text.of("队伍 §" + team.getColor().getCode() + team.getName() + " §r 获得了胜利");
             logic.running = false;
-            SERVER.getWorld(World.OVERWORLD).getPlayers().forEach(player -> {
+            SERVER.getOverworld().getPlayers().forEach(player -> {
                 try {
                     player.networkHandler.sendPacket(
                             new TitleS2CPacket(Texts.parse(player.getCommandSource(), text, player, 0)));
