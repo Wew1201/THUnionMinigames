@@ -7,6 +7,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -41,6 +42,7 @@ public class RegisterParticipantsTask extends MinigameTask<SurvivalGameLogic> {
             LOGGER.info("Assigned {} as spectator", player.getEntityName());
             scoreboard.clearPlayerTeam(player.getEntityName());
             player.changeGameMode(GameMode.SPECTATOR);
+            player.sendMessage(Text.of("你已成为旁观者"));
         }
     }
 
@@ -60,6 +62,7 @@ public class RegisterParticipantsTask extends MinigameTask<SurvivalGameLogic> {
                 scoreboard.clearPlayerTeam(player.getEntityName());
                 scoreboard.addPlayerToTeam(player.getEntityName(), team);
                 allPlayers.add(player);
+                player.sendMessage(Text.of("你的队伍为 " + team.getColor().name()));
             }
         }
         double stepAngle = 2 * Math.PI / allPlayers.size();
