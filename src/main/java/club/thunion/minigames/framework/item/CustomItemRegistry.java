@@ -1,5 +1,7 @@
 package club.thunion.minigames.framework.item;
 
+import club.thunion.minigames.sg.item.SignalScreener;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,26 +16,21 @@ import java.util.*;
 public class CustomItemRegistry {
     public static final Map<CustomItemBehavior, Object> BEHAVIOR_TO_GROUP = new HashMap<>();
     public static final Map<Item, CustomItemBehavior> BEHAVIOR_REGISTRY = new HashMap<>();
-    public static final Map<Long, Box> EXPIRY_TIME_TO_SCREENED_BOX = new TreeMap<>();
 
     public static TypedActionResult<ItemStack> handleCustomItem(ItemStack itemStack, World world, PlayerEntity user, Hand hand) {
         if (BEHAVIOR_REGISTRY.containsKey(itemStack.getItem())) {
-            for (Iterator<Map.Entry<Long, Box>> iterator = EXPIRY_TIME_TO_SCREENED_BOX.entrySet().iterator();
-                iterator.hasNext();) {
-                Map.Entry<Long, Box> entry = iterator.next();
-                if (entry.getKey() < (world).getTime()) iterator.remove();
-                else if (entry.getValue().contains(user.getPos())) return null;
+            CustomItemBehavior behavior = BEHAVIOR_REGISTRY.get(itemStack.getItem());
+            if (behavior.respectSignalScreening()) {
+                for (Iterator<Long2ObjectMap.Entry<Box>> iterator = SignalScreener.screenedFields.long2ObjectEntrySet().iterator();
+                     iterator.hasNext(); ) {
+                    Map.Entry<Long, Box> entry = iterator.next();
+                    if (entry.getKey() < (world).getTime()) iterator.remove();
+                    else if (entry.getValue().contains(user.getPos())) return null;
+                }
             }
-            return BEHAVIOR_REGISTRY.get(itemStack.getItem()).tryHandle(itemStack, world, user, hand);
+            return behavior.tryHandle(itemStack, world, user, hand);
         }
         return null;
-    }
-
-    public static void screenBox(Box screenedBox, long expiryTime) {
-        while (EXPIRY_TIME_TO_SCREENED_BOX.containsKey(expiryTime)) {
-            expiryTime ++; // I know this is bullshit code, but a game tick or two does not matter anyway
-        }
-        EXPIRY_TIME_TO_SCREENED_BOX.put(expiryTime, screenedBox);
     }
 
     public static void registerCustomItem(Object group, CustomItemBehavior behavior) {

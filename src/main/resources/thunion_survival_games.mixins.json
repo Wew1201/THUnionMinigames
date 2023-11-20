@@ -9,7 +9,8 @@
     "Explosion_weakFireball",
     "FireballEntity_selfDestruct",
     "PersistentProjectileEntity_accessor",
-    "SnowballEntity_iceBomb",
+    "ProjectileEntity_interfere",
+    "SnowballEntity_iceBombAndScreener",
     "TridentEntity_thunder",
     "WitherSkullEntity_nerf"
   ],

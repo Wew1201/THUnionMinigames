@@ -17,4 +17,8 @@ public abstract class CustomItemBehavior {
     public abstract Item getItem();
 
     public abstract TypedActionResult<ItemStack> tryHandle(ItemStack itemStack, World world, PlayerEntity user, Hand hand);
+
+    public boolean respectSignalScreening() {
+        return true;
+    }
 }
