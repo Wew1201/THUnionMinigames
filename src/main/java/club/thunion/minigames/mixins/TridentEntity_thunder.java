@@ -22,7 +22,7 @@ public abstract class TridentEntity_thunder {
     public void thunder(TridentEntity self, Entity hitEntity) {
         if (hitEntity == null) {
             List<PlayerEntity> playersNearby = self.getWorld().getEntitiesByClass(PlayerEntity.class,
-                    self.getBoundingBox().expand(4), p -> {
+                    self.getBoundingBox().expand(7), p -> {
                         if (p == self.getOwner()) return false;
                         if (self.getOwner() == null) return false;
                         return p.getWorld().getScoreboard().getTeam(p.getEntityName()) !=
@@ -34,6 +34,7 @@ public abstract class TridentEntity_thunder {
         Entity entity2 = self.getOwner();
         BlockPos blockPos = hitEntity.getBlockPos();
         LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(self.getWorld());
+        hitEntity.getDamageSources().lightningBolt();
         if (lightningEntity != null) {
             lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
             lightningEntity.setChanneler(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity) entity2 : null);
