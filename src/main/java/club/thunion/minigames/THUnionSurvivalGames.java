@@ -3,6 +3,8 @@ package club.thunion.minigames;
 import club.thunion.minigames.framework.MinigameRegistry;
 import club.thunion.minigames.framework.item.CustomItemBehavior;
 import club.thunion.minigames.framework.item.CustomItemRegistry;
+import club.thunion.minigames.miniminigames.walkingOnIceGameEntities;
+import club.thunion.minigames.miniminigames.walkingOnIceGameLogic;
 import club.thunion.minigames.sg.item.*;
 import club.thunion.minigames.util.ChatHelper;
 import com.mojang.brigadier.CommandDispatcher;
@@ -70,7 +72,9 @@ public class THUnionSurvivalGames implements ModInitializer {
                     return 1;
                 }));
             }
+
         });
+        CommandRegistrationCallback.EVENT.register(((dispatcher,registryAccess,environment) -> walkingOnIceGameLogic.register(dispatcher)));
     }
 
     @Override

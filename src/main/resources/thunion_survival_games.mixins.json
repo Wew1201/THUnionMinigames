@@ -12,7 +12,8 @@
     "ProjectileEntity_interfere",
     "SnowballEntity_iceBombAndScreener",
     "TridentEntity_thunder",
-    "WitherSkullEntity_nerf"
+    "WitherSkullEntity_nerf",
+    "MinecraftSeverMixin"
   ],
   "client": [
   ],
