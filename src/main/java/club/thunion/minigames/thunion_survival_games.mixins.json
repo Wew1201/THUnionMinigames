@@ -1,0 +1,23 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "club.thunion.minigames.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "BlockDisplayEntity_accessor",
+    "DisplayEntity_accessor",
+    "Explosion_weakFireball",
+    "FireballEntity_selfDestruct",
+    "PersistentProjectileEntity_accessor",
+    "ProjectileEntity_interfere",
+    "SnowballEntity_iceBombAndScreener",
+    "TridentEntity_thunder",
+    "WitherSkullEntity_nerf",
+    "MinecraftSeverMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
